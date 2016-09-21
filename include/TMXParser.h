@@ -71,6 +71,9 @@ namespace TMX
         std::string name;
         float opacity;
         bool visible;
+        float offsetx;
+        float offsety;
+        std::string draworder;
         std::map<std::string, Object> object;
         std::map<std::string, std::string> property;
       };
@@ -84,6 +87,8 @@ namespace TMX
         std::string name;
         float opacity;
         bool visible;
+        float offsetx;
+        float offsety;
         std::map<std::string, std::string> property;
         Image image;
       };
@@ -95,6 +100,8 @@ namespace TMX
       std::map<std::string, ImageLayer> imageLayer;
     protected:
     private:
+      template<typename Ch>
+      const char* presentOrDefaut(rapidxml::xml_attribute<Ch>* node, const char* defaultVal);
   };
 
 }

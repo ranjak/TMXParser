@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
-#include "base64.h"
 
 namespace TMX {
 
@@ -110,14 +109,23 @@ namespace TMX {
     for( rapidxml::xml_node<>* oGroup_node = root_node->first_node( "objectgroup" ); oGroup_node; oGroup_node = oGroup_node->next_sibling( "objectgroup" ) ) {
       ObjectGroup oGroup;
       std::cout << std::endl;
-      oGroup.color = oGroup_node->first_attribute( "color" )->value();
+      oGroup.color = presentOrDefaut( oGroup_node->first_attribute( "color" ), "" );
       std::cout << "Object Group Color: " << oGroup.color << std::endl;
       oGroup.name = oGroup_node->first_attribute( "name" )->value();
       std::cout << "Object Group Name: " << oGroup.name << std::endl;
-      oGroup.opacity = std::atof( oGroup_node->first_attribute( "opacity" )->value() );
+      oGroup.opacity = std::atof( presentOrDefaut( oGroup_node->first_attribute( "opacity" ), "1.0" ) );
       std::cout << "Object Group Opacity: " << oGroup.opacity << std::endl;
-      oGroup.visible = std::atoi( oGroup_node->first_attribute( "visible" )->value() );
+      oGroup.visible = std::atoi( presentOrDefaut( oGroup_node->first_attribute( "visible" ), "1" ) );
       std::cout << "Object Group Visible: " << oGroup.visible << std::endl;
+
+      oGroup.offsetx = std::atof( presentOrDefaut( oGroup_node->first_attribute( "offsetx" ), "0" ) );
+      std::cout << "Object Group Offset X: " << oGroup.offsetx << std::endl;
+
+      oGroup.offsety = std::atof( presentOrDefaut( oGroup_node->first_attribute( "offsety" ), "0" ) );
+      std::cout << "Object Group Offset Y: " << oGroup.offsety << std::endl;
+
+      oGroup.draworder = presentOrDefaut( oGroup_node->first_attribute( "draworder" ), "topdown" );
+      std::cout << "Object Group Draw Order: " << oGroup.draworder << std::endl;
 
       if( oGroup_node->first_node( "properties" ) != 0 ) {
         for( rapidxml::xml_node<>* properties_node = oGroup_node->first_node( "properties" )->first_node( "property" ); properties_node; properties_node = properties_node->next_sibling() ) {
@@ -140,13 +148,17 @@ namespace TMX {
       imgLayer.name = image_node->first_attribute( "name" )->value();
       std::cout << "Image Layer Name: " << imgLayer.name << std::endl;
 
-      if( image_node->first_attribute( "opacity" ) != 0 ) {
-        imgLayer.opacity = std::atof( image_node->first_attribute( "opacity" )->value() );
-        std::cout << "Image Layer Opacity: " << imgLayer.opacity << std::endl;
-      }
+      imgLayer.opacity = std::atof( presentOrDefaut( image_node->first_attribute( "opacity" ), "1.0" ) );
+      std::cout << "Image Layer Opacity: " << imgLayer.opacity << std::endl;
 
-      imgLayer.visible = std::atoi( image_node->first_attribute( "visible" )->value() );
+      imgLayer.visible = std::atoi( presentOrDefaut( image_node->first_attribute( "visible" ), "1" ) );
       std::cout << "Image Layer Visibility: " << imgLayer.visible << std::endl;
+
+      imgLayer.offsetx = std::atof( presentOrDefaut( image_node->first_attribute( "offsetx" ), "0" ) );
+      std::cout << "Image Layer Offset X: " << imgLayer.offsetx << std::endl;
+
+      imgLayer.offsety = std::atof( presentOrDefaut( image_node->first_attribute( "offsety" ), "0" ) );
+      std::cout << "Image Layer Offset Y: " << imgLayer.offsety << std::endl;
 
       imgLayer.image.source = image_node->first_node( "image" )->first_attribute( "source" )->value();
       std::cout << "Image Layer Source: " << imgLayer.visible << std::endl;
@@ -172,5 +184,11 @@ namespace TMX {
     }
 
     return true;
+  }
+
+  template<typename Ch>
+  const char* Parser::presentOrDefaut(rapidxml::xml_attribute<Ch>* node, const char* defaultVal)
+  {
+    return node != nullptr ? node->value() : defaultVal;
   }
 }
